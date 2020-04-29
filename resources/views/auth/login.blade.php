@@ -4,6 +4,16 @@
         <div class="row">
             <div class="col-lg-4 mx-auto">
                 <h3 class="login-heading mb-4 text-center">CMS</h3>
+                @if (\Session::has('error'))
+                    <div class="alert alert-danger">
+                        {!! \Session::get('error') !!}
+                    </div>
+                @endif
+                @if (\Session::has('success'))
+                    <div class="alert alert-success">
+                        {!! \Session::get('success') !!}
+                    </div>
+                @endif
                 <form action="{{url('post-login')}}" method="POST" id="loginForm">
                     @csrf
                     <div class="form-group row">

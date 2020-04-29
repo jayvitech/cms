@@ -22,3 +22,5 @@ Route::post('post-register', 'AuthController@postRegister');
 
 Route::get('dashboard', 'AuthController@dashboard');
 Route::get('logout', 'AuthController@logout')->name('logout');
+
+Route::get('change-request-status/{user_id}/{request_status}', 'AuthController@changeRequestStatus');

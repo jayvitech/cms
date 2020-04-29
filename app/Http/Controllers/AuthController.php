@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Hobby;
 use App\User;
 use App\User_hobby;
+use App\User_request;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,8 @@ class AuthController extends Controller
 {
     public function index() {
         if(Auth::check()){
-            return Redirect::to('dashboard');
+            $userData = User::where('id', '!=', auth()->user()->id)->get();
+            return view('user.dashboard', ['userData' => $userData]);
         }
         return view('auth.login');
     }
@@ -38,7 +40,7 @@ class AuthController extends Controller
             /* Authentication passed */
             return redirect()->to('dashboard');
         }
-        return Redirect::to("login")->withSuccess('Invalid credentials...');
+        return Redirect::to("login")->with('error', 'You entered invalid credential...');
     }
 
     public function postRegister(Request $request)
@@ -66,18 +68,39 @@ class AuthController extends Controller
             }
         }
 
-        return Redirect::to("login")->withSuccess('Great! You have Successfully register.');
+        return Redirect::to("login")->with('success', 'You are register successfully please log in.');
     }
 
     public function dashboard() {
         if(Auth::check()){
-            return view('dashboard');
+            $userData = User::where('id', '!=', auth()->user()->id)->get();
+            return view('user.dashboard', ['userData' => $userData]);
         }
-        return Redirect::to("login");
     }
 
     public function logout() {
         Auth::logout();
         return Redirect('login');
+    }
+
+    public function changeRequestStatus($user_id, $request_status) {
+        if($request_status == 1) {
+            $userRequest = new User_request();
+            $userRequest->send_by_user_id = \auth()->user()->id;
+            $userRequest->send_to_user_id = $user_id;
+            $userRequest->status = 2;
+            $userRequest->save();
+            return 1;
+        }
+
+        if($request_status == 2) {
+            $updateStatus = User_request::where('send_by_user_id', $user_id)->update(['status' => 0]);
+            return 1;
+        }
+
+        if($request_status == 3) {
+            $updateStatus = User_request::where('send_to_user_id', $user_id)->update(['status' => $request_status]);
+            return 1;
+        }
     }
 }

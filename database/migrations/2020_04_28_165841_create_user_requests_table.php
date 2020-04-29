@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserHobbiesTable extends Migration
+class CreateUserRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateUserHobbiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_hobbies', function (Blueprint $table) {
+        Schema::create('user_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id');
-            $table->string('hobby_id');
+            $table->integer('send_by_user_id');
+            $table->integer('send_to_user_id');
+            $table->tinyInteger('status'); /* /* 0=friends 1=send request, 2=accept request, 3=block */
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateUserHobbiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_hobbies');
+        Schema::dropIfExists('user_requests');
     }
 }
