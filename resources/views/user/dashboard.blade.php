@@ -2,6 +2,8 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">CMS</a>
+        <a class="navbar-brand" href="{{ url('/users') }}"> User List</a>
+        <a class="navbar-brand" href="{{ url('/user-history') }}"> User History</a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- Left Side Of Navbar -->
@@ -41,7 +43,7 @@
                         <h3>User List</h3>
                         <div class="row">
                             <div>
-                                <label for="genderFilter">Filter</label>
+                                <label for="genderFilter">Gender Filter</label>
                                 <select name="genderFilter" id="genderFilter" onchange="callFilterGender(this.value, 1)">
                                     <option value="99">Select Gender</option>
                                     <option value="0">Male</option>
@@ -49,7 +51,7 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="hobbyFilter">Filter</label>
+                                <label for="hobbyFilter">Hobby Filter</label>
                                 <select name="hobbyFilter" id="hobbyFilter" onchange="callFilterHobby(this.value, 2)">
                                     <option value="99">Select Hobby</option>
                                     @foreach($hobbiesData as $hobby)

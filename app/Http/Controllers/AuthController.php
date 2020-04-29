@@ -23,14 +23,12 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function register()
-    {
+    public function register() {
         $hobbiesData = Hobby::where('status', 1)->get();
         return view('auth.register', ['hobbiesData' => $hobbiesData]);
     }
 
-    public function postLogin(Request $request)
-    {
+    public function postLogin(Request $request) {
         request()->validate([
             'email' => 'required',
             'password' => 'required',
@@ -44,8 +42,7 @@ class AuthController extends Controller
         return Redirect::to("login")->with('error', 'You entered invalid credential...');
     }
 
-    public function postRegister(Request $request)
-    {
+    public function postRegister(Request $request) {
         request()->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
@@ -240,5 +237,4 @@ class AuthController extends Controller
         }
         return $data;
     }
-
 }

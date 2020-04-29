@@ -21,6 +21,7 @@ Route::get('register', 'AuthController@register');
 Route::post('post-register', 'AuthController@postRegister');
 
 Route::get('dashboard', 'AuthController@dashboard');
+Route::get('users', 'AuthController@dashboard');
 Route::get('logout', 'AuthController@logout')->name('logout');
 
 /* handle user request */
@@ -30,3 +31,5 @@ Route::get('change-request-status/{user_id}/{request_status}', 'AuthController@c
 Route::get('call-filter/{value}', 'AuthController@callFilter');
 Route::get('call-filter-hobby/{value}', 'AuthController@callFilterHobby');
 
+/* user history */
+Route::get('user-history', 'UserController@userHistory');
