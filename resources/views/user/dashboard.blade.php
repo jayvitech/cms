@@ -39,6 +39,12 @@
                 <div class="container">
                     <div class="table-responsive">
                         <h3>User List</h3>
+                        <label for="genderFilter">Filter</label>
+                        <select name="genderFilter" id="genderFilter" onchange="callFilter(this.value)">
+                            <option value="99">Select Gender</option>
+                            <option value="0">Male</option>
+                            <option value="1">Female</option>
+                        </select>
                         <table class="table">
                             <thead>
                             <tr>
@@ -47,10 +53,10 @@
                                 <th>Email</th>
                                 <th>Gender</th>
                                 <th>Hobbies</th>
-                                <th>Request Status</th>
+                                <th colspan="2">Request Status</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="user_table" class="user_table">
                             @foreach($userData as $key => $user)
                                 <tr>
                                     <td>{{$key+1}}</td>
@@ -70,41 +76,36 @@
                                     <td>{{$hobbyName}}</td>
                                     @php
                                         $userRequest = \App\User_request::where('send_to_user_id', $user['id'])->where('send_by_user_id', auth()->user()->id)->get();
-                                        $userRequest1 = \App\User_request::where('send_to_user_id', auth()->user()->id)->where('send_by_user_id', $user['id'])->get();
+                                        $userByRequest = \App\User_request::where('send_to_user_id', auth()->user()->id)->where('send_by_user_id', $user['id'])->get();
                                     @endphp
-                                    @if(count($userRequest) > 0 || count($userRequest1) > 0)
+                                    @if(count($userRequest) > 0 || count($userByRequest) > 0)
                                         @foreach($userRequest as $request)
                                             @if($request->status == 0)
-                                                <td><span>Friends</span></td>
+                                                <td>
+                                                    <span style="color: green">Your Friend</span>
+                                                </td>
+                                                <td><button type="button" onclick="callajax({{$user['id']}}, 3)" id="block_request" class="btn btn-danger block_request"> Block Request </button></td>
                                             @endif
                                             @if($request->status == 2)
-                                                <td><button type="button" onclick="callajax({{$user['id']}}, 2)" id="accept_request" class="btn btn-warning accept_request"> Accept Request </button></td>
-                                            @endif
-                                            @if($request->status == 3)
-                                                <td><button type="button" onclick="callajax({{$user['id']}}, 3)" id="block_request" class="btn btn-danger block_request"> Block Request </button></td>
+                                                <td><span style="color: green">Friend Request Send</span></td>
                                             @endif
                                         @endforeach
 
-                                        @foreach($userRequest1 as $request)
+                                        @foreach($userByRequest as $request)
                                             @if($request->status == 0)
-                                                <td><span>Friends</span></td>
-                                            @endif
+                                                <td>
+                                                    <span style="color: green">Your Friend</span>
+                                                </td>
+                                                <td><button type="button" onclick="callajax({{$user['id']}}, 3)" id="block_request" class="btn btn-danger block_request"> Block Request </button></td>
+                                                @endif
                                             @if($request->status == 2)
                                                 <td><button type="button" onclick="callajax({{$user['id']}}, 2)" id="accept_request" class="btn btn-warning accept_request"> Accept Request </button></td>
                                             @endif
-                                            @if($request->status == 3)
-                                                <td><button type="button" onclick="callajax({{$user['id']}}, 3)" id="block_request" class="btn btn-danger block_request"> Block Request </button></td>
-                                            @endif
                                         @endforeach
                                     @else
-                                       <td><button type="button" onclick="callajax({{$user['id']}}, 1)" id="send_request" class="btn btn-primary send_request" >Send Friend Request</button></td>
+                                        <td><button type="button" onclick="callajax({{$user['id']}}, 1)" id="send_request" class="btn btn-primary send_request" >Send Friend Request</button></td>
+                                        <td><button type="button" onclick="callajax({{$user['id']}}, 3)" id="block_request" class="btn btn-danger block_request"> Block Request </button></td>
                                     @endif
-                                    {{--@if($user['request_status'] == 2)--}}
-                                        {{--<button type="button" onclick="callajax({{$user['id']}}, 2)" id="accept_request" class="btn btn-warning accept_request"> Accept Request </button>--}}
-                                    {{--@endif--}}
-                                    {{--@if($user['request_status'] == 3)--}}
-                                         {{--<button type="button" onclick="callajax({{$user['id']}}, 3)" id="block_request" class="btn btn-danger block_request"> Block Request </button>--}}
-                                    {{--@endif--}}
                                 </tr>
                             @endforeach
                             </tbody>
@@ -115,8 +116,7 @@
         </div>
     </div>
 
-    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-
+    <script src="{{ asset('js/jquery.min.js') }}" defer></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
@@ -124,19 +124,46 @@
             }
         });
 
-
         function callajax(user_id, request_status) {
-            //var id = $("#send_request").text();
-            $.ajax({
-                type:'GET',
-                url:'/change-request-status/' + user_id + '/' + request_status,
-                success:function(data){
-                    if(data === 1) {
-                        $(".send_request").html("Request send");
+            if(request_status == 3) {
+                var r = confirm("Are you sure to block this person?");
+                if (r == true) {
+                    $.ajax({
+                        type:'GET',
+                        url:'/change-request-status/' + user_id + '/' + request_status,
+                        success:function(data){
+                            if(data === 1) {
+                                //$(".block_request").html("Blocked");
+                                location.reload(true);
+                            }
+                        }
+                    });
+                }
+            }
+
+            if(request_status == 1 || request_status == 2) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/change-request-status/' + user_id + '/' + request_status,
+                    success: function (data) {
+                        if (data === 1) {
+                            //$(".send_request").html("Request send");
+                            location.reload(true);
+                        }
                     }
-                    //alert(data.success);
+                });
+            }
+        }
+
+        function callFilter(value) {
+            $.ajax({
+                type: 'GET',
+                url: '/call-filter/' + value,
+                success: function (data) {
+                    $(".user_table").html(data);
                 }
             });
         }
+
     </script>
 @endsection
