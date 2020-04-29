@@ -28,4 +28,5 @@ Route::get('change-request-status/{user_id}/{request_status}', 'AuthController@c
 
 /* handle filter */
 Route::get('call-filter/{value}', 'AuthController@callFilter');
+Route::get('call-filter-hobby/{value}', 'AuthController@callFilterHobby');
 

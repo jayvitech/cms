@@ -144,4 +144,12 @@ return [
 
     ],
 
+    'database' => [
+        'connection' => 'mysql',
+        'driver' => 'database',
+        'table' => 'jobs',
+        'queue' => 'default',
+        'expire' => 60,
+    ],
+
 ];

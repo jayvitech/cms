@@ -39,12 +39,25 @@
                 <div class="container">
                     <div class="table-responsive">
                         <h3>User List</h3>
-                        <label for="genderFilter">Filter</label>
-                        <select name="genderFilter" id="genderFilter" onchange="callFilter(this.value)">
-                            <option value="99">Select Gender</option>
-                            <option value="0">Male</option>
-                            <option value="1">Female</option>
-                        </select>
+                        <div class="row">
+                            <div>
+                                <label for="genderFilter">Filter</label>
+                                <select name="genderFilter" id="genderFilter" onchange="callFilterGender(this.value, 1)">
+                                    <option value="99">Select Gender</option>
+                                    <option value="0">Male</option>
+                                    <option value="1">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="hobbyFilter">Filter</label>
+                                <select name="hobbyFilter" id="hobbyFilter" onchange="callFilterHobby(this.value, 2)">
+                                    <option value="99">Select Hobby</option>
+                                    @foreach($hobbiesData as $hobby)
+                                        <option value="{{$hobby->id}}">{{$hobby->hobby_name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         <table class="table">
                             <thead>
                             <tr>
@@ -70,6 +83,7 @@
                                             foreach ($hobbiesData as $hobby) {
                                                 $hobbyName .= $hobby->hobbyName .', ';
                                             }
+                                            $hobbyName = rtrim($hobbyName, ', ');
                                         }
                                     @endphp
 
@@ -132,9 +146,8 @@
                         type:'GET',
                         url:'/change-request-status/' + user_id + '/' + request_status,
                         success:function(data){
-                            if(data === 1) {
-                                //$(".block_request").html("Blocked");
-                                location.reload(true);
+                            if(data == 1) {
+                                window.location.reload();
                             }
                         }
                     });
@@ -146,19 +159,27 @@
                     type: 'GET',
                     url: '/change-request-status/' + user_id + '/' + request_status,
                     success: function (data) {
-                        if (data === 1) {
-                            //$(".send_request").html("Request send");
-                            location.reload(true);
+                        if (data == 1) {
+                            window.location.reload();
                         }
                     }
                 });
             }
         }
 
-        function callFilter(value) {
+        function callFilterGender(value, filterType) {
             $.ajax({
                 type: 'GET',
                 url: '/call-filter/' + value,
+                success: function (data) {
+                    $(".user_table").html(data);
+                }
+            });
+        }
+        function callFilterHobby(value, filterType) {
+            $.ajax({
+                type: 'GET',
+                url: '/call-filter-hobby/' + value,
                 success: function (data) {
                     $(".user_table").html(data);
                 }

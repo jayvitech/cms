@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Observers\UserActionsObserver;
+use App\User_request;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,5 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+        User_request::observe(UserActionsObserver::class);
+
     }
 }
